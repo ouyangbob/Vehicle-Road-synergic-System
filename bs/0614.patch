@@ -1,0 +1,185 @@
+diff --git a/TargetSettings.h b/TargetSettings.h
+index 54653e8..6fc01ce 100644
+--- a/TargetSettings.h
++++ b/TargetSettings.h
+@@ -1,6 +1,11 @@
+ #ifndef TARGET_SETTINGS_H
+ #define TARGET_SETTINGS_H
+ 
++#include "communication/proto/test.pb.h"
++
++static proto_RoadBlockRequest stRoadBlockRequest = {0};
++static proto_RoadBlockResponse stRoadBlockResponse = {0};
++
+ /*-----------------------------------------------------------------------------*/
+ /* target optiion                                                              */
+ /*-----------------------------------------------------------------------------*/
+@@ -26,7 +31,7 @@
+ /*-----------------------------------------------------------------------------*/
+ /* server to roadblock setup                                                      */
+ /*-----------------------------------------------------------------------------*/
+-#define ROADBLOCK_SERVER_IP "192.168.3.177"
++#define ROADBLOCK_SERVER_IP "192.168.1.123"
+ #define ROADBLOCK_SERVER_PORT 4001
+ 
+ /*-----------------------------------------------------------------------------*/
+@@ -155,7 +160,6 @@ typedef struct _infoSignalAndSensor
+ //
+ #define CELL_NUM 5
+ 
+-#include "communication/proto/test.pb.h"
+ //
+ //通过CAN读取的车辆信息
+ //
+diff --git a/communication/commNet/commNet.c b/communication/commNet/commNet.c
+index 6b5e9ee..1e70f18 100644
+--- a/communication/commNet/commNet.c
++++ b/communication/commNet/commNet.c
+@@ -403,7 +403,7 @@ void uploadRoadBlockProcess(proto_RoadBlockRequest *(RoadBlockInfoGet)(void))
+ 			printf("n = %d\n", n);
+ #endif
+ 			memset(sendBuf, 0, sizeof(sendBuf));
+-#if CURR_MODULE == SL_MODULE
++
+ 			recvLen = recv(client_fd, recvBuf, 100, 0);
+ 			if (recvLen <= 0)
+ 			{
+@@ -425,7 +425,6 @@ void uploadRoadBlockProcess(proto_RoadBlockRequest *(RoadBlockInfoGet)(void))
+ 			//
+ 			istream = pb_istream_from_buffer(protoBufMessage, sizeof(recvBuf) - PROTOBUF_MESSAGE_OFFSET);
+ 
+-			proto_RoadBlockResponse stRoadBlockResponse = {0};
+ 			//
+ 			//将buf数据解码后写入流
+ 			//
+@@ -440,9 +439,12 @@ void uploadRoadBlockProcess(proto_RoadBlockRequest *(RoadBlockInfoGet)(void))
+ 			printf("Color = %d\n", stRoadBlockResponse.Color);
+ 			printf("SpeedLimit = %f\n", stRoadBlockResponse.SpeedLimit);
+ 			printf("\n=========UPLOAD_END_%d==========\n", u32loopCount++);
++#if CURR_MODULE == SL_MODULE
++			stRoadBlockRequest.SpeedLimit = stRoadBlockResponse.SpeedLimit;
++#endif
++			stRoadBlockRequest.RsuId = stRoadBlockResponse.RsuId;
+ 			memset(recvBuf, 0, sizeof(recvBuf));
+ 			sleep(10); //数据十秒发送一次给云平台
+-#endif
+ 		}
+ 	}
+ #else
+diff --git a/communication/commRoadBlock/commRoadBlock.c b/communication/commRoadBlock/commRoadBlock.c
+index d5ef946..fe2821d 100644
+--- a/communication/commRoadBlock/commRoadBlock.c
++++ b/communication/commRoadBlock/commRoadBlock.c
+@@ -179,8 +179,11 @@ void RoadBlockProcess(void)
+ 		*u8Addr = RB_SEND_ADDR;
+ 		*u8Func = RB_SEND_FUNC;
+ 
+-		*u8Color = 0x00;
+-		*u8Num = 0x20;
++		srand((unsigned)time(NULL));
++		*u8Color = rand() % 3;
++		//*u8Color = stRoadBlockResponse.Color;
++		*u8Num = rand() % 91 + 30;
++		//*u8Num = stRoadBlockRequest.SpeedLimit;
+ 
+ 		printf("buf = ");
+ 		for(int i = 0; i < sizeof(buf); i++)
+@@ -207,7 +210,7 @@ void RoadBlockProcess(void)
+ 		}
+ 		printf("\n");
+ #endif
+-		sleep(10);
++		sleep(1);
+ 	}
+ }
+ 
+diff --git a/communication/itsManager/itsManager.c b/communication/itsManager/itsManager.c
+index 9b9eeac..160bba9 100644
+--- a/communication/itsManager/itsManager.c
++++ b/communication/itsManager/itsManager.c
+@@ -60,9 +60,6 @@
+ /* private parameters                                                          */
+ /*-----------------------------------------------------------------------------*/
+ 
+-static proto_RoadBlockRequest stRoadBlockRequest = {0};
+-
+-extern void v2xTxProcess(uint8_t *(*v2xTxBufGet)(uint16_t *bufLen, uint64_t time));
+ /*-----------------------------------------------------------------------------*/
+ /* private function                                                  		   */
+ /*-----------------------------------------------------------------------------*/
+@@ -75,7 +72,6 @@ extern void v2xTxProcess(uint8_t *(*v2xTxBufGet)(uint16_t *bufLen, uint64_t time
+ static void getRoadBlockInfo(void)
+ {
+     static proto_position_data_t *ptrCarLocationRequest = NULL;
+-    ptrCarLocationRequest = malloc(sizeof(proto_position_data_t));
+     //
+     //从position获取数据
+     //
+@@ -90,14 +86,6 @@ static void getRoadBlockInfo(void)
+     stRoadBlockRequest.latitude = ptrCarLocationRequest->latitude;
+     //stRoadBlockRequest.longitude = 118.19139;
+     //stRoadBlockRequest.latitude = 24.48663;
+-#if CURR_MODULE == RB_MODULE
+-    stRoadBlockRequest.SpeedLimit = 0.0;
+-#elif CURR_MODULE == SL_MODULE
+-    stRoadBlockRequest.SpeedLimit = 60.0;
+-#else
+-    stRoadBlockRequest.SpeedLimit = -1.0;
+-#endif
+-    stRoadBlockRequest.RsuId = 100;
+ 
+     printf("======================GPS INFO START==========================\n");
+     printf("longitude = %5.5f\n", ptrCarLocationRequest->longitude);
+@@ -114,9 +102,7 @@ static void getRoadBlockInfo(void)
+ static proto_RoadBlockRequest *getRoadBlockInfoToUpload(void)
+ {
+     proto_RoadBlockRequest *stRetPtr = NULL;
+-    stRetPtr = malloc(sizeof(proto_RoadBlockRequest));
+     stRetPtr = &stRoadBlockRequest;
+-
+     return stRetPtr;
+ }
+ 
+@@ -137,7 +123,6 @@ static uint8_t *v2xObuTxBufGet(uint16_t *bufLen, uint64_t time)
+     pb_ostream_t ostream;
+     static uint8_t sendBuf[V2X_SEND_BUF_SIZE];
+     proto_RoadBlockRequest *stRetPtr = NULL;
+-    stRetPtr = malloc(sizeof(proto_RoadBlockRequest));
+     memset(sendBuf, 0, sizeof(sendBuf));
+ 
+     *bufLen = 0;
+@@ -191,6 +176,17 @@ void itsProcessCreate(void)
+     printf("double size = %d\n", sizeof(double));
+ #endif
+     getRoadBlockInfo();
++    //设置初始ID和限速值，路障限速值设为0
++#if CURR_MODULE == RB_MODULE
++    stRoadBlockRequest.SpeedLimit = 0.0;
++    stRoadBlockRequest.RsuId = 300;
++#elif CURR_MODULE == SL_MODULE
++    stRoadBlockRequest.SpeedLimit = 60.0;
++    stRoadBlockRequest.RsuId = 200;
++#else
++    stRoadBlockRequest.SpeedLimit = -1.0;
++    stRoadBlockRequest.RsuId = 0;
++#endif
+ 
+     //新建上传云服务端线程
+     pthread_create(&threadidNet, NULL, (void *)&uploadRoadBlockProcess, &getRoadBlockInfoToUpload);
+@@ -201,11 +197,12 @@ void itsProcessCreate(void)
+     //新建OBU广播线程
+     pthread_create(&threadidV2xTx, NULL, (void *)&v2xTxProcess, &v2xObuTxBufGet);
+     pthread_detach(threadidV2xTx);
+-
++	
++#if CURR_MODULE == SL_MODULE
+     //新建上传限速牌线程
+-    //pthread_create(&threadidRoadBlock, NULL, (void *)&RoadBlockProcess, NULL);
+-    //pthread_detach(threadidRoadBlock);
+-
++    pthread_create(&threadidRoadBlock, NULL, (void *)&RoadBlockProcess, NULL);
++    pthread_detach(threadidRoadBlock);
++#endif
+     /* do nothing */
+     while (1)
+     {

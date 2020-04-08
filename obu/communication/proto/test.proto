@@ -1,0 +1,427 @@
+syntax = "proto3";  
+package proto;
+
+ message RsuInfoRequest 
+ {
+     uint32 RsuId = 1; 
+     uint64 Timestamp = 2; 
+     uint32 NorthSignalL = 3; 
+     uint32 NorthDelayL = 4; 
+     uint32 NorthSignalD = 5; 
+     uint32 NorthDelayD = 6;  
+     uint32 NorthSignalR = 7; 
+     uint32 NorthDelayR = 8;
+     uint32 SouthSignalL = 9; 
+     uint32 SouthDelayL = 10; 
+     uint32 SouthSignalD = 11; 
+     uint32 SouthDelayD = 12; 
+     uint32 SouthSignalR = 13; 
+     uint32 SouthDelayR = 14; 
+     uint32 WestSignalL = 15;
+     uint32 WestDelayL = 16; 
+     uint32 WestSignalD = 17; 
+     uint32 WestDelayD = 18; 
+     uint32 WestSignalR = 19; 
+     uint32 WestDelayR = 20; 
+     uint32 EastSignalL = 21; 
+     uint32 EastDelayL = 22; 
+     uint32 EastSignalD = 23; 
+     uint32 EastDelayD = 24; 
+     uint32 EastSignalR = 25; 
+     uint32 EastDelayR = 26; 
+     uint32 SensorRain = 27; 
+     uint32 SensorWaterLogged = 28; 
+     uint32 SensorVisibility = 29; 
+ }
+ 
+ message RsuInfoResponse {
+   uint32 RsuId = 1; 
+   uint64 Timestamp = 2; 
+   string Code = 3;
+ }
+ 
+ 
+ message ObuTrafficLightsRequest{
+ uint32 VechicleId = 1; 
+ uint64 Timestamp = 2; 
+ double VechicleLongitude = 3; 
+ double VechicleLatitude = 4; 
+ double VechicleHeading = 5;
+ double VechicleSpeed = 6;
+ uint32 VechicleForwardTurning = 7; 
+ uint32 VechicleLaneChangingIntention = 8;
+ uint32 VechicleSpeedChangeIntention = 9;
+ uint32 TrafficId = 10; 
+ uint32 TrafficDirection = 11; 
+ uint32 TrafficTrace = 12; 
+ uint32 TrafficSignal = 13; 
+ uint32 TrafficDelay = 14; 
+
+ }
+ 
+ message ObuTrafficLightsResponse{
+ uint32 VechicleId= 1; 
+ uint64 Timestamp = 2; 
+ string Code = 3;
+ }
+ 
+ 
+ message RoadBlockRequest{
+ uint32 RsuId = 1; 
+ uint64 Timestamp = 2; 
+ float SpeedLimit = 3;
+ float latitude = 4;
+ float longitude = 5;
+ } 
+
+ message RoadBlockResponse{
+ uint32 RsuId = 1; 
+ uint64 Time = 2; 
+ uint32 Color = 3;
+ float SpeedLimit = 4;
+ } 
+
+message uwb{
+ uint32 CarId = 1; 
+ uint64 Timestamp = 2; 
+ bool NorthHemisphere = 3;
+ bool EastHemisphere = 4;
+ float Latitude = 5;
+ float Longitude = 6;
+}
+ 
+ 
+message Vcu1{
+ uint32 CarId = 1;
+ uint64 Timestamp = 2; 
+ float MotorControlInputVoltage = 3; 
+ float MotorControlInputCurrent = 4; 
+ int32 MotorTorque = 5;
+ int32 MotorSpeed = 6;
+ }
+ 
+message Vcu2{
+ 
+uint32 CarId = 1;
+uint64 Timestamp = 2; 
+int32 MotorTemperatur = 3;
+int32 MotorControlTemperature = 4; 
+uint32 HighVoltageSwitch = 5; 
+uint32 PowerMode = 6;
+uint32 ClimbMode = 7; 
+uint32 Gear = 8;
+uint32 EffectiveElectricBrak = 9; 
+uint32 ChargDetectionSignal = 10; 
+uint32 AirConditionerSignal = 11;
+uint32 PrechargeContactor = 12;
+uint32 MasterContactor = 13;
+uint32 SystemDemo = 14;
+}
+
+message Vcu3{
+ uint32 CarId = 1;
+ uint64 Timestamp = 2;
+ float TractionPedalPercent = 3; 
+ float BrakePedalPercent = 4; 
+}
+
+message Vcu4{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 VehicleModel = 3;
+uint32 VehicleSystem = 4; 
+uint32 ElectricalMachinery = 5; 
+}
+
+message Meter1{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 KeyFirstGearSignal = 3; 
+uint32 KeyTwoGearSignal = 4; 
+uint32 BackDoorOpenSignal = 5; 
+uint32 FrontDoorOpenSignal = 6; 
+uint32 RearCompartmentDoorOpenSignal = 7; 
+uint32 ParkingSignal = 8; 
+uint32 VehicleLowPressureAlarm = 9;
+uint32 TurnLeftInstruction = 10;
+uint32 FarLightInstruction = 11;
+uint32 FrontMistInstruction = 12; 
+uint32 TurnRightInstruction = 13; 
+uint32 OilMassAlarm = 14; 
+uint32 EnginePreheat = 15;
+uint32 NearLightInstruction = 16; 
+uint32 BackMistInstruction = 17;
+float VehicleSpeed = 18; 
+float AirPressureOne = 19;
+float AirPressureTwo = 20; 
+ }
+ 
+ message Meter2{
+ uint32 CarId = 1;
+ uint64 Timestamp = 2;
+ float MeterTotalMileage = 3; 
+ float MeterPartMileage = 4; 
+}
+ 
+ message AirCondition{
+ uint32 CarId = 1;
+ uint64 Timestamp = 2;
+ float ActualAirConditioningLoad = 3; 
+ int32 SetTemperature = 4; 
+ int32 CarOutsideTemperature = 5; 
+ int32 CarInsideTemperature = 6; 
+ float DirectCurrentelEctricity = 7; 
+ uint32 AirConditionerStatusReady = 8; 
+ uint32 AirConditionerStatusBreakdown = 9;
+ uint32 AirConditionerStatusStart = 10;
+ uint32 LifeValue = 11; 
+ }
+ 
+ message Bms1{
+ uint32 CarId = 1;
+ uint64 Timestamp = 2;
+ float TotalBatteryVoltage = 3;
+ float RechargeDischargeElectricity = 4; 
+ float SOCValue = 5;
+ uint32 PressureBig = 6; 
+ uint32 TotalOvervoltage = 7; 
+ uint32 TotalUndervoltage = 8;
+ uint32 InsideCommunicationFail = 9;
+ uint32 SOCLow = 10; 
+ uint32 SOCHigt = 11;
+ uint32 MonocaseUndervoltage = 12;
+ uint32 MonocaseOvervoltage = 13;
+ uint32 TemperatureOverSize = 14;
+ uint32 TemperatureRiseOversize = 15; 
+ uint32 TemperatureOverTop = 16; 
+ uint32 RechargeElectricityOverSize = 17;
+ uint32 DischargeElectricityOverSize = 18;
+ uint32 InsulationAlarm = 19;
+ uint32 SmogAlarm = 20;
+ uint32 CellTemperatureOverSize = 21;
+ uint32 FuseStatus = 22;
+ uint32 CurrentRechargeStatus = 23;
+ uint32 RechargeConnectSureSignal = 24;
+ uint32 CommunicationWithBatteryCharger = 25;
+ uint32 HaveCapacitySmallCell = 26;
+ uint32 HaveResistanceBigCell = 27;
+ uint32 InsideContactorSignal = 28;
+ uint32 RadiatSystemRunning = 29;
+}
+
+message Bms2{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+float CurrentMaxAllowRechargeElectricity = 3;
+float CurrentMaxAllowDischargeElectricity = 4;
+uint32 LiPoSystemBreakdownClass = 5;
+float MonomerMeanVoltage = 6;
+int32 MonomerMaxTemperature = 7;
+}
+ 
+message Bms3{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 PositiveInsulatingResistance = 3;
+uint32 NegativeInsulatingResistance = 4;
+float CellVoltageMaxValue = 5;
+float CellVoltageMinValue = 6;
+}
+  
+message Bms4{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 VINAcceptStatus = 3; 
+uint32 AssistContactorGlue = 4;
+uint32 ChargingContactorStatus = 5;
+uint32 CellCathodeContactorGlue = 6; 
+uint32 CellAnodeContactorGlue = 7;
+uint32 MSDStatus = 8; 
+uint32 WirelessRechargeConnectSignal = 9;
+uint32 ChargingStationOverTemperatureTemperature = 10; 
+uint32 FireExtinguisherAlarm = 11; 
+int32 ChargingStationTemperature1 = 12; 
+int32 ChargingStationTemperature2 = 13;
+int32 ChargingStationTemperature3 = 14; 
+int32 ChargingStationTemperature4 = 15; 
+uint32 ActiveBreakdownCount = 16; 
+uint32 ChargeComplete = 17; 
+uint32 WarmModuleTurnoff = 18; 
+uint32 HighPressureTurnoff = 19; 
+uint32 CellSystemPilesUnmatched = 20; 
+uint32 CellOverRecharge = 21; 
+uint32 SOCSaltusStep = 22; 
+}
+
+message Bms5{
+ uint32 CarId = 1;
+ uint64 Timestamp = 2;
+ uint32 CellSystemRatedCapacity = 3; 
+ float CellSystemRatedVoltage = 4; 
+ uint32 CellMonomerCascadeNumber = 5; 
+ uint32 CellMonomerMultipleNumber = 6; 
+ uint32 CellSystemTemperatureProbeNumber = 7; 
+ }
+ 
+message Bms6{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+int32 CellTemperatureMaxValue = 3;
+uint32 CellMaxTemperatureCode = 4;
+uint32 CellMaxTemperatureNum = 5;
+int32 CellTemperatureMinValue = 6;
+uint32 CellMinTemperatureCode = 7;
+uint32 CellMinTemperatureNum = 8;
+uint32 CellTypeInfo = 9;
+uint32 CellCollMode = 10;
+}
+ 
+message Bms7{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 CellMaxVoltageCode = 3;
+uint32 CellMaxVoltageNum = 4;
+uint32 CellMinVoltageCode = 5;
+uint32 CellMinVoltageNum = 6;
+}
+  
+message Bms8{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 ForwardCellNum1 = 3;
+float ForwardCellVoltage1 = 4;
+uint32 ForwardCellNum2 = 5;
+float ForwardCellVoltage2 = 6;
+}
+
+message Bms9{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 ForwardCellNum5 = 3;
+float ForwardCellVoltage5 = 4;
+uint32 NegativeCellNum1 = 5;
+float NegativeCellVoltage1 = 6;
+}
+
+message Bms10{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 CellNum1 = 3;
+float CellVoltage1 = 4;
+uint32 CellNum2 = 5;
+float CellVoltage2 = 6;
+}
+
+message Bms11{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 ForwardSamplingSite1Number = 3; 
+int32 ForwardSamplingSite1Temperature = 4; 
+uint32 ForwardSamplingSite2Number = 5; 
+int32 ForwardSamplingSite2Temperature = 6; 
+uint32 ForwardSamplingSite3Number = 7; 
+int32 ForwardSamplingSite3Temperature = 8; 
+uint32 ForwardSamplingSite4Number = 9; 
+int32 ForwardSamplingSite4Temperature = 10; 
+}
+
+message Bms12{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 ForwardSamplingSite5Number = 3; 
+int32 ForwardSamplingSite5Temperature = 4; 
+uint32 NegativeSamplingSite1Number = 5; 
+int32 NegativeSamplingSite1Temperature = 6; 
+uint32 NegativeSamplingSite2Number = 7; 
+int32 NegativeSamplingSite2Temperature = 8;
+uint32 NegativeSamplingSite3Number = 9; 
+int32 NegativeSamplingSite3Temperature = 10;
+}
+
+message Bms13{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 NegativeSamplingSite4Number = 3; 
+int32 NegativeSamplingSite4Temperature = 4; 
+uint32 NegativeSamplingSite5Number = 5; 
+int32 NegativeSamplingSite5Temperature = 6; 
+}
+
+message Bms14{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 SamplingSite1Number = 3; 
+int32 SamplingSite1Temperature = 4;
+uint32 SamplingSite2Number = 5; 
+int32 SamplingSite2Temperature = 6;
+uint32 SamplingSite3Number = 7; 
+int32 SamplingSite3Temperature = 8; 
+uint32 SamplingSite4Number = 9; 
+int32 SamplingSite4Temperature = 10;
+} 
+
+message Bms15{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 CellPermissibleDisconnectionIdentification = 3;
+uint32 MainContactorRequestStatus = 4; 
+uint32 ElectricDefrostingContactorRequestStatus = 5; 
+uint32 ElectricHeatingContactorRequestStatus = 6; 
+uint32 ACContactorRequestStatus = 7; 
+}
+
+message OilPump1{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 MotorSpeed = 3; 
+uint32 HeartbeatSignal = 4; 
+uint32 HighVoltageFaultMarkerBit = 5; 
+uint32 HighVoltageFaultRating = 6; 
+}
+
+message OilPump2{
+uint32 CarId = 1;
+uint64 Timestamp = 2;
+uint32 OilPumpEnabled = 3; 
+uint32 VehicleSpeed = 4; 
+}
+ 
+ 
+message CANMessage{
+Vcu1 Vcu1Msg = 1;
+Vcu2 Vcu2Msg = 2;
+Vcu3 Vcu3Msg = 3;
+Vcu4 Vcu4Msg = 4;
+Meter1 Meter1Msg = 5;
+Meter2 Meter2Msg = 6;
+AirCondition AirConditionMsg = 7; 
+Bms1 Bms1Msg = 8;
+Bms2 Bms2Msg = 9;
+Bms3 Bms3Msg = 10;
+Bms4 Bms4Msg = 11;
+Bms5 Bms5Msg = 12;
+Bms6 Bms6Msg = 13;
+Bms7 Bms7Msg = 14;
+Bms8 Bms8Msg = 15;
+Bms9 Bms9Msg = 16;
+Bms10 Bms10Msg = 17;
+Bms11 Bms11Msg = 18;
+Bms12 Bms12Msg = 19;
+Bms13 Bms13Msg = 20;
+Bms14 Bms14Msg = 21;
+Bms15 Bms15Msg = 22;
+OilPump1 OilPump1Msg = 23;
+OilPump2 OilPump2Msg = 24;
+}
+
+message position_data_t
+{
+	uint32 CarId = 1;
+    double latitude = 2;
+    double longitude = 3;
+    double heading = 4;
+    double velocity = 5;
+	double speed = 6;
+	double trace = 7;
+}
+

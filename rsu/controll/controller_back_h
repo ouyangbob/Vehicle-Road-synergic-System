@@ -1,0 +1,22 @@
+#ifndef __CONTROLLER_H
+
+#define HIK_TRAFFIC
+#define STM32_FRIST 0
+
+#define PBUF_LEN 10240
+#define MAX_DUMMY_PACKET_LEN (10000)
+
+extern void *pthread_protobuf_func(void* ptr);
+extern void *pthread_sendto_cloud(void* ptr);
+
+#ifdef HIK_TRAFFIC
+#if STM32_FRIST
+extern void *pthread_hik_traffic_func(void* ptr);
+#else
+extern void *pthread_stm32_date_func(void* ptr);
+#endif
+#endif
+
+extern unsigned int user_data_to_server_len;
+extern int send_to_stm32_flag ;
+#endif
